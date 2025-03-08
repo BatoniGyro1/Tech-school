@@ -12,4 +12,5 @@ export class UserRensponseDto {
 
     @Expose()
     password: string;
+    
 }

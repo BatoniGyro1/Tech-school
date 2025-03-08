@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRensponseDto } from 'list/user/user.dto';
+import { TokenResponseDto } from 'list/user/tokenResponse.dto';
 
 
 @Controller('user')
@@ -10,7 +11,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto): Promise<UserRensponseDto> {
+  create(@Body() createUserDto: CreateUserDto): Promise<TokenResponseDto> {
     return this.userService.create(createUserDto);
   }
 

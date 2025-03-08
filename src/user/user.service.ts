@@ -3,6 +3,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
 import { UserRensponseDto } from 'list/user/user.dto';
+import { AuthService } from 'src/auth/auth.service';
+import { TokenResponseDto } from 'list/user/tokenResponse.dto';
 
 
 @Injectable()
@@ -10,13 +12,29 @@ export class UserService {
 
 
   constructor(
-    private readonly userRepository: UserRepository
+    private readonly userRepository: UserRepository,
+    private readonly authService: AuthService,
   ) {
 
   }
 
-  async create(createUserDto: CreateUserDto): Promise<UserRensponseDto> {
-    return this.userRepository.create(createUserDto);
+  async create(createUserDto: CreateUserDto): Promise<TokenResponseDto> {
+    const created = await this.userRepository.create(createUserDto);
+    try {
+      if(!created) {
+        throw new Error('Try Register Again');
+      }
+      
+      const token = await this.authService.createToken({
+        id: created.id,
+        name: created.name,
+        email: created.email
+      })
+
+      return token;
+    } catch(err) {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   async findAll(): Promise<UserRensponseDto[]> {
