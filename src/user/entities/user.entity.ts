@@ -1,4 +1,6 @@
+import { roles } from "src/auth/role.enum";
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+
 
 
 @Entity({name: "user"})
@@ -14,6 +16,15 @@ export class UserEntity {
 
     @Column({type: 'varchar'})
     password: string;
+
+    @Column({nullable: true})
+    parentNumber: string;
+
+    @Column()
+    phoneNumber: string;
+
+    @Column({type: 'enum', enum: roles})
+    role: roles
 
     @CreateDateColumn()
     createdAt: Date;

@@ -5,6 +5,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRensponseDto } from 'list/user/user.dto';
 import { TokenResponseDto } from 'list/user/tokenResponse.dto';
 import { AuthGuard } from 'src/auth/authentification.guard';
+import { Roleguard } from 'src/auth/role.guard';
+import { ROLE_GUARD } from 'src/auth/role.decorator';
+import { roles } from 'src/auth/role.enum';
+import { Admin } from 'typeorm';
 
 
 @Controller('user')
@@ -23,6 +27,8 @@ export class UserController {
   }
 
   @Get('/get')
+  @ROLE_GUARD(roles.Admin)
+  @UseGuards(Roleguard)
   findAllWithAdmins(): Promise<UserRensponseDto[]> {
     return this.userService.findAllWithAdmins();
   }

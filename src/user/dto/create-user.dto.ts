@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsBoolean, IsEmail, IsEnum, IsString } from "class-validator";
+import { IsBoolean, IsEmail, IsEnum, IsOptional, IsString } from "class-validator";
 
 export class CreateUserDto {
     @IsString()
@@ -10,6 +10,13 @@ export class CreateUserDto {
 
     @IsString()
     password: string;
+
+    @IsString()
+    @IsOptional()
+    parentNumber?: string;
+
+    @IsString()
+    phoneNumber: string;
 
     
 }

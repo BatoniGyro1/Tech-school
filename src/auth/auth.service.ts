@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt'
 import { JwtService } from '@nestjs/jwt';
 import { TokenResponseDto } from 'list/user/tokenResponse.dto';
 import { tokenInterface } from 'list/auth/auth.interface';
+import { roles } from './role.enum';
 
 
 
@@ -28,6 +29,7 @@ export class AuthService {
           id: user.id,
           name: user.name,
           email: user.email,
+          role: user.role
         })
         return token;
       } else {
@@ -44,6 +46,7 @@ export class AuthService {
       id: authInterface.id,
       name: authInterface.name,
       email: authInterface.email,
+      role: authInterface.role
     }
     const token = await this.jwtService.signAsync(plainObj, {secret: process.env.SECRETJWTCODE});
     return {

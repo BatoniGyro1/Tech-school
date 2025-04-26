@@ -5,6 +5,8 @@ import { Repository } from "typeorm";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import * as bcrypt from 'bcrypt'
+import { roles } from "src/auth/role.enum";
+
 
 
 
@@ -21,6 +23,7 @@ export class UserRepository {
         const salt = await bcrypt.genSalt();
         const hash = await bcrypt.hash(created.password, salt);
         created.password = hash;
+        created.role = roles.User
         return await this.userRepostiory.save(created);
     }
 

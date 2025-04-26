@@ -5,6 +5,7 @@ import { UserRepository } from './user.repository';
 import { UserRensponseDto } from 'list/user/user.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { TokenResponseDto } from 'list/user/tokenResponse.dto';
+import { roles } from 'src/auth/role.enum';
 
 
 @Injectable()
@@ -20,6 +21,7 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto): Promise<TokenResponseDto> {
     const created = await this.userRepository.create(createUserDto);
+
     try {
       if(!created) {
         throw new Error('Try Register Again');
@@ -28,8 +30,11 @@ export class UserService {
       const token = await this.authService.createToken({
         id: created.id,
         name: created.name,
-        email: created.email
+        email: created.email,
+        role: roles.User,
       })
+
+      
 
       return token;
     } catch(err) {
@@ -38,7 +43,16 @@ export class UserService {
   }
 
   async findAll(): Promise<UserRensponseDto[]> {
-    return this.userRepository.findAll();
+    const users = await this.userRepository.findAll();
+    
+    const UserArr = [];
+    for(let i in users) {
+  
+      const {password, ...others} = users[i];
+      UserArr.push(others)
+    }
+
+    return UserArr;
   }
 
   async findAllWithAdmins(): Promise<UserRensponseDto[]> {
@@ -47,11 +61,12 @@ export class UserService {
 
   async findOne(id: number): Promise<UserRensponseDto> {
     const user = await this.userRepository.findOne(id);
+    const {password, ...others} = user;
     try {
       if(!user) {
-
+        throw new Error();
       }
-      return user;
+      return others;
     } catch(err) {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     }

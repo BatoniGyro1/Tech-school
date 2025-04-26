@@ -1,10 +1,11 @@
-import { CanActivate, ExecutionContext, HttpException, HttpStatus, UnauthorizedException } from "@nestjs/common";
+import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 import { Observable } from "rxjs";
 import { AUTH_GUARD_KEY } from "./auth.decorator";
 
+@Injectable()
 export class AuthGuard implements CanActivate {
     constructor(
         private readonly jwtService: JwtService,
@@ -15,7 +16,7 @@ export class AuthGuard implements CanActivate {
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const isPublic = this.reflector.getAllAndOverride<boolean>(AUTH_GUARD_KEY, [
-            context.getHandler,
+            context.getHandler(),
             context.getClass(),
         ])
         const request = context.switchToHttp().getRequest();
@@ -23,14 +24,17 @@ export class AuthGuard implements CanActivate {
 
 
         try {
+
             if(isPublic) {
                 return true;
             }
 
+
             if (!token) {
                 throw new Error('Token is invaild');
             }
-
+   
+            
             const verificated = await this.jwtService.verifyAsync(token,
                 {
                     secret: process.env.SECRETJWTCODE
@@ -40,10 +44,13 @@ export class AuthGuard implements CanActivate {
             if (!verificated) {
                 throw new Error('Token is invaild')
             } else {
+                request.user = verificated
+                
                 return true;
             }
 
         } catch (err) {
+            console.log(err.message);
             throw new UnauthorizedException();
         }
     }
